@@ -55,6 +55,7 @@ class Lesson(models.Model):
         on_delete=models.CASCADE,
         verbose_name="курс",
         help_text="выберите курс",
+        related_name='lesson_set'
     )
     video_url = models.URLField(
         max_length=200,
