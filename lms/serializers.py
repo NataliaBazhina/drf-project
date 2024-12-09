@@ -1,18 +1,21 @@
 from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField
-from rest_framework.generics import CreateAPIView, ListAPIView
-from rest_framework.serializers import ModelSerializer
+from .models import Course, Lesson
 
-from lms.models import Course, Lesson
+class LessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['id', 'title', 'description']
 
-
-class CourseSerializer(ModelSerializer):
+class CourseSerializer(serializers.ModelSerializer):
     count_of_lessons = serializers.SerializerMethodField()
+    info_lessons = serializers.SerializerMethodField()
 
     def get_count_of_lessons(self, obj):
-        """Подсчет количества уроков, связанных с данным курсом"""
-
         return obj.lesson_set.count()
+
+    def get_info_lessons(self, obj):
+        lessons = obj.lesson_set.all()
+        return LessonSerializer(lessons, many=True).data
 
     class Meta:
         model = Course
@@ -21,10 +24,9 @@ class CourseSerializer(ModelSerializer):
             "description",
             "preview",
             "count_of_lessons",
+            "info_lessons",
         )
 
 
-class LessonSerializer(ModelSerializer):
-    class Meta:
-        model = Lesson
-        fields = "__all__"
+
+
