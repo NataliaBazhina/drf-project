@@ -1,9 +1,11 @@
 from datetime import datetime
-from django.contrib.auth.models import BaseUserManager, UserManager
-from django.contrib.auth.models import AbstractUser
+
+from django.contrib.auth.models import (AbstractUser, BaseUserManager,
+                                        UserManager)
 from django.db import models
 
 from lms.models import Course, Lesson
+
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -27,6 +29,7 @@ class UserManager(BaseUserManager):
             raise ValueError("Суперпользователь должен иметь is_superuser=True.")
 
         return self.create_user(email, password, **extra_fields)
+
 
 class User(AbstractUser):
     username = None
@@ -67,7 +70,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
-
 
 
 class Payment(models.Model):

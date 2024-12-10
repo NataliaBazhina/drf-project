@@ -1,18 +1,16 @@
 from django.views.generic import TemplateView
-from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
-)
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     ListAPIView, RetrieveAPIView,
+                                     UpdateAPIView)
 from rest_framework.viewsets import ModelViewSet
 
 from lms.models import Course, Lesson
 from lms.serializers import CourseSerializer, LessonSerializer
 
+
 class HomePageView(TemplateView):
-    template_name = 'home.html'
+    template_name = "home.html"
+
 
 class CourseViewSet(ModelViewSet):
     serializer_class = CourseSerializer
