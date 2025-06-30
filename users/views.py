@@ -4,7 +4,7 @@ from rest_framework import filters
 from .serializers import UserSerializer
 from .models import Payment, User
 from .serializers import PaymentSerializer
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView,ListAPIView,RetrieveAPIView,UpdateAPIView,DestroyAPIView
 
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
@@ -22,3 +22,25 @@ class UserCreateAPIView(CreateAPIView):
         user = serializer.save(is_active=True)
         user.set_password(user.password)
         user.save()
+
+
+class UserListAPIView(ListAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
+
+class UserRetrieveAPIView(RetrieveAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
+
+class UserUpdateAPIView(UpdateAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
+
+class UserDestroyAPIView(DestroyAPIView):
+    queryset = User.objects.all()
