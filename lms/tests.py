@@ -1,4 +1,4 @@
-from lms.models import Course, Lesson
+from lms.models import Course, Lesson, Subscription
 from users.models import User
 from rest_framework.test import APITestCase
 from django.urls import reverse
@@ -73,3 +73,52 @@ class LessonsTestCase(APITestCase):
                   }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data, result)
+
+class SubscriptionViewTests(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(email="admin@sky.pro")
+        self.course = Course.objects.create(
+            title="Танцевальная акробатика", description="Курс включает в себя элементы партерной акробатики и полетной  акробатики", owner=self.user
+        )
+
+    def test_subscribe_to_course(self):
+        """Тестирование добавления подписки на курс"""
+        self.client.force_authenticate(user=self.user)
+        url = reverse("lms:subscribe")
+        response = self.client.post(url, {"course_id": self.course.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("message"), "Подписка добавлена.")
+        self.assertTrue(
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
+        )
+
+    def test_unsubscribe_from_course(self):
+        """Тестирование удаления подписки с курса"""
+        Subscription.objects.create(user=self.user, course=self.course)
+
+        self.client.force_authenticate(user=self.user)
+        url = reverse("lms:subscribe")
+        response = self.client.post(url, {"course_id": self.course.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("message"), "Подписка удалена.")
+        self.assertFalse(
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
+        )
+
+    def test_subscribe_to_nonexistent_course(self):
+        """Тестирование добавления подписки на несуществующий курс"""
+        self.client.force_authenticate(user=self.user)
+        url = reverse("lms:subscribe")
+        response = self.client.post(url, {"course_id": 1000000})
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_unauthenticated_user(self):
+        """Тестирование доступа неаутентифицированного пользователя"""
+        url = reverse("lms:subscribe")
+        response = self.client.post(url, {"course_id": self.course.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
