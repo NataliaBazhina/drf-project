@@ -1,11 +1,7 @@
-from datetime import datetime
-
+from datetime import date
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
-
 from lms.models import Course, Lesson
-
-
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -80,7 +76,7 @@ class Payment(models.Model):
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name="Пользователь"
     )
-    payment_date = models.DateField(default=datetime.now, verbose_name="Дата оплаты")
+    payment_date = models.DateField(default=date.today, verbose_name="Дата оплаты")
     paid_course = models.ForeignKey(
         Course,
         on_delete=models.SET_NULL,
@@ -99,6 +95,23 @@ class Payment(models.Model):
     type = models.CharField(
         max_length=50, choices=PAYMENT_CHOICES, verbose_name="Способ оплаты"
     )
+    session_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="ID сессии",
+    )
 
-    def __str__(self):
-        return f"{self.owner} - {self.get_type_display()} - {self.amount}"
+    link = models.URLField(
+        max_length=400,
+        blank=True,
+        null=True,
+        verbose_name="Ссылка на оплату",
+    )
+
+    class Meta:
+        verbose_name = "Платеж"
+        verbose_name_plural = "Платежи"
+
+        def __str__(self):
+            return f"{self.owner} - {self.get_type_display()} - {self.amount}"

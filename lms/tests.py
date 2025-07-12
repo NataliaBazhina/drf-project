@@ -10,10 +10,14 @@ class LessonsTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create(email="admin@sky.pro")
         self.course = Course.objects.create(
-            title="Прыжки", description="В курсе представлены маленькие и большие прыжки"
+            title="Прыжки",
+            description="В курсе представлены маленькие и большие прыжки",
         )
         self.lesson = Lesson.objects.create(
-            title="Saute", description="Маленькие прыжки", owner=self.user, course=self.course,
+            title="Saute",
+            description="Маленькие прыжки",
+            owner=self.user,
+            course=self.course,
         )
         self.client.force_authenticate(user=self.user)
 
@@ -30,7 +34,7 @@ class LessonsTestCase(APITestCase):
             "title": "Общая физическая подготовка",
             "description": "Урок содержит упражнения для развития физической формы ученика",
             "course": self.course.pk,
-            "video_url": "http://youtube.com/"
+            "video_url": "http://youtube.com/",
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -59,27 +63,32 @@ class LessonsTestCase(APITestCase):
         url = reverse("lms:lessons_list")
         response = self.client.get(url)
         data = response.json()
-        result = {'count': 1,
-                  'next': None,
-                  'previous': None,
-                  'results': [
-                      {'id': self.lesson.pk,
-                       'title': self.lesson.title,
-                       'course': self.course.pk,
-                       'owner': self.user.pk,
-                       'video_url': self.lesson.video_url
-                       }
-                  ]
-                  }
+        result = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [
+                {
+                    "id": self.lesson.pk,
+                    "title": self.lesson.title,
+                    "course": self.course.pk,
+                    "owner": self.user.pk,
+                    "video_url": self.lesson.video_url,
+                }
+            ],
+        }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data, result)
+
 
 class SubscriptionViewTests(APITestCase):
 
     def setUp(self):
         self.user = User.objects.create(email="admin@sky.pro")
         self.course = Course.objects.create(
-            title="Танцевальная акробатика", description="Курс включает в себя элементы партерной акробатики и полетной  акробатики", owner=self.user
+            title="Танцевальная акробатика",
+            description="Курс включает в себя элементы партерной акробатики и полетной  акробатики",
+            owner=self.user,
         )
 
     def test_subscribe_to_course(self):

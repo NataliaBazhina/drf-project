@@ -1,12 +1,15 @@
 from django.urls import include, path
 from rest_framework.permissions import AllowAny
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView)
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from users.views import (UserCreateAPIView, UserDestroyAPIView,
-                         UserListAPIView, UserRetrieveAPIView,
-                         UserUpdateAPIView)
+from users.views import (
+    UserCreateAPIView,
+    UserDestroyAPIView,
+    UserListAPIView,
+    UserRetrieveAPIView,
+    UserUpdateAPIView, PaymentCreateAPIView,
+)
 
 from .apps import UsersConfig
 from .views import PaymentViewSet
@@ -34,5 +37,6 @@ urlpatterns = [
     path("view/<int:pk>/", UserRetrieveAPIView.as_view(), name="users_detail"),
     path("update/<int:pk>/", UserUpdateAPIView.as_view(), name="users_update"),
     path("delete/<int:pk>/", UserDestroyAPIView.as_view(), name="users_delete"),
+    path("payment/", PaymentCreateAPIView.as_view(), name="payment")
 ]
 urlpatterns += router.urls

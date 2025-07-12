@@ -1,7 +1,13 @@
+from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
-from rest_framework.generics import (CreateAPIView, DestroyAPIView,
-                                     ListAPIView, RetrieveAPIView,
-                                     UpdateAPIView, get_object_or_404)
+from rest_framework.generics import (
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+    get_object_or_404,
+)
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,13 +16,18 @@ from lms.models import Course, Lesson, Subscription
 from lms.paginations import CustomPagination
 from lms.serializers import CourseSerializer, LessonSerializer
 from users.permissions import IsModer, IsOwner
-
+from drf_yasg.utils import swagger_auto_schema
 
 
 class HomePageView(TemplateView):
     template_name = "home.html"
 
-
+@method_decorator(
+    name="list",
+    decorator=swagger_auto_schema(
+        operation_description="description from swagger_auto_schema via method_decorator"
+    ),
+)
 class CourseViewSet(ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
@@ -28,7 +39,6 @@ class CourseViewSet(ModelViewSet):
         course.owner = self.request.user
         course.save()
 
-
     def get_permissions(self):
         if self.action == "create":
             self.permission_classes = (~IsModer,)
@@ -37,6 +47,7 @@ class CourseViewSet(ModelViewSet):
         elif self.action == "destroy":
             self.permission_classes = (~IsModer | IsOwner,)
         return super().get_permissions()
+
 
 class LessonCreateApiView(CreateAPIView):
     serializer_class = LessonSerializer
@@ -47,6 +58,7 @@ class LessonCreateApiView(CreateAPIView):
         lesson = serializer.save()
         lesson.owner = self.request.user
         lesson.save()
+
 
 class LessonListApiView(ListAPIView):
     serializer_class = LessonSerializer
@@ -69,6 +81,7 @@ class LessonUpdateApiView(UpdateAPIView):
 class LessonDestroyApiView(DestroyAPIView):
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsOwner | ~IsModer]
+
 
 class SubscriptionAPIView(APIView):
     permission_classes = [IsAuthenticated]

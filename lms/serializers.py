@@ -2,12 +2,13 @@ from rest_framework import serializers
 from .models import Course, Lesson, Subscription
 from .validators import validate_links
 
+
 class LessonSerializer(serializers.ModelSerializer):
     video_url = serializers.CharField(validators=[validate_links])
 
     class Meta:
         model = Lesson
-        fields = ["id","title", "course","owner","video_url"]
+        fields = ["id", "title", "course", "owner", "video_url"]
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -36,5 +37,5 @@ class CourseSerializer(serializers.ModelSerializer):
             "preview",
             "count_of_lessons",
             "info_lessons",
-            "is_subscribed"
+            "is_subscribed",
         )
