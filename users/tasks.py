@@ -8,12 +8,12 @@ from users.models import User
 
 @shared_task
 def block_user():
-    time_threshold = timezone.now() - timedelta(months=1)
+    time_threshold = timezone.now() - timedelta(days=31)
     users_to_block = User.objects.filter(
         last_login__isnull=False,
         last_login__lte=time_threshold,
         is_active=True
-    )
+    ).exlude(is_staff=True).exlude(is_superuser=True)
     blocked_users = list(users_to_block.values('id', 'email', 'last_login'))
     if blocked_users:
         updated = users_to_block.update(is_active=False)
