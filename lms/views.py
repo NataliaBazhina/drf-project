@@ -17,6 +17,7 @@ from lms.paginations import CustomPagination
 from lms.serializers import CourseSerializer, LessonSerializer
 from users.permissions import IsModer, IsOwner
 from drf_yasg.utils import swagger_auto_schema
+from lms.tasks import subscription_message
 
 
 class HomePageView(TemplateView):
@@ -47,6 +48,13 @@ class CourseViewSet(ModelViewSet):
         elif self.action == "destroy":
             self.permission_classes = (~IsModer | IsOwner,)
         return super().get_permissions()
+
+    def perform_update(self, serializer):
+        """Отсылает сообщение об обновлении курса подписанному пользователю"""
+        update_course = serializer.save()
+        subscriptions = Subscription.objects.filter(course=update_course)
+        for subscription in subscriptions:
+            subscription_message.delay(update_course.title, subscription.user.email)
 
 
 class LessonCreateApiView(CreateAPIView):
@@ -90,13 +98,19 @@ class SubscriptionAPIView(APIView):
         user = request.user
         course_id = request.data.get("course_id")
         course = get_object_or_404(Course, id=course_id)
-        subs_item = Subscription.objects.filter(user=request.user, course=course)
+        subs_item = Subscription.objects.filter(user=user, course=course)
 
         if subs_item.exists():
             subs_item.delete()
             message = "Подписка удалена."
         else:
-            Subscription.objects.create(user=request.user, course=course)
+            Subscription.objects.create(user=user, course=course)
             message = "Подписка добавлена."
-
-        return Response({"message": message})
+        serializer = CourseSerializer(
+            course,
+            context={'request': request}
+        )
+        return Response({
+            "message": message,
+            "course": serializer.data
+        })
