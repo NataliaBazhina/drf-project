@@ -1,8 +1,8 @@
 import stripe
 from django.conf import settings
 
-# Инициализация Stripe с секретным ключом
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 def create_stripe_product(product_name):
     """Создает продукт в stripe"""
@@ -10,6 +10,7 @@ def create_stripe_product(product_name):
     return stripe.Product.create(
         name=product_name,
     )
+
 
 def create_stripe_price(amount, product):
     """Создает цену в stripe"""
