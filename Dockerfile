@@ -26,8 +26,10 @@ ENV CELERY_BACKEND='redis://localhost:6379'
 
 RUN mkdir -p /app/media
 
+RUN mkdir -p /app/staticfiles && chmod -R 755 /app/staticfiles
+
 
 EXPOSE 8080
 
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
+CMD ["sh", "-c", "python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8080"]
