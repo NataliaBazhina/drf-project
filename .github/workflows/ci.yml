@@ -66,6 +66,10 @@ jobs:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: python manage.py test
 
+    - name: Debug
+      run: |
+        python -c "import sys; print('Test mode:', 'test' in sys.argv)"
+
   build:
     needs: test
     runs-on: ubuntu-latest
