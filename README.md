@@ -6,19 +6,19 @@ LMS-система - это веб-приложение, позволяющее 
 
 LMS-система позволяет создавать и управлять курсами, добавлять материалы, а также предоставляет функционал для управления пользователями и их доступами.
 
-## Авторы
+## Автор
 
 * Имя: Бажина Наталья
 * Email: nataliaagapova27@yandex.ru
 * GitHub: https://github.com/NataliaBazhina
 
-## Требования к проекту
+## Технологии
 
-* Python: версия 3.8 или выше
-* Django: версия 3.2 или выше
-* PostgreSQL: версия 12 или выше
-* Docker: версия 20.10 или выше
-* Docker Compose: версия 2.0 или выше
+- Python 3.10
+- Django 4.2
+- PostgreSQL 14
+- Docker 20.10+
+- GitHub Actions
 
 ## Инструкции по установке и запуску проекта
 
@@ -37,38 +37,70 @@ LMS-система позволяет создавать и управлять �
 5. Создать базу данных: `python manage.py migrate`
 6. Запустить сервер: `python manage.py runserver`
 
-### Запуск через Docker Compose
+### Production-развертывание 
 
-1. Клонировать репозиторий: `git clone git@github.com:NataliaBazhina/drf-project.git`
-2. Перейти в папку проекта: `cd project`
-3. Создать файл `.env` на основе `.env.sample` 
-4. Запустить проект: `docker-compose up -d --build`
-5. Проект будет доступен по адресу: http://localhost:8080
+1. Подготовка сервера
 
-## Проверка работоспособности сервисов
+sudo apt update
+sudo apt install docker.io
+sudo systemctl enable docker
 
-1. **Django-приложение (web)**:
-   - Откройте в браузере: http://localhost:8080
-   - Проверка логов: `docker-compose logs web`
+2. Настройка переменных окружения
 
-2. **PostgreSQL (db)**:
-   - Проверить подключение: `docker-compose exec db psql -U postgres -d drf`
-   - Проверка логов: `docker-compose logs db`
+mkdir -p ~/drf-project
+nano ~/drf-project/.env  # скопируйте переменные из .env.sample
 
-3. **Redis**:
-   - Проверить работу: `docker-compose exec redis redis-cli ping` (должен ответить "PONG")
-   - Проверка логов: `docker-compose logs redis`
+3. Создание systemd сервиса
+sudo nano /etc/systemd/system/myapp.service
+Вставьте:
 
-4. **Celery (worker)**:
-   - Проверка логов: `docker-compose logs celery`
+[Unit]
+Description=Django LMS Application
+After=network.target docker.service
 
-5. **Celery Beat (scheduler)**:
-   - Проверка логов: `docker-compose logs celery_beat`
+[Service]
+Type=simple
+Restart=always
+RestartSec=5s
+EnvironmentFile=/etc/default/myapp
+ExecStart=/usr/bin/docker run \
+  --name myapp \
+  -p 80:8080 \
+  -e HOST=localhost \
+  -v /home/ubuntu/drf-project/.env:/app/.env \
+  ${DOCKER_IMAGE}
+ExecStop=/usr/bin/docker stop myapp
 
-## Остановка проекта
+[Install]
+WantedBy=multi-user.target
 
-Для остановки всех сервисов выполните:
-`docker-compose down`
+4. Создание файла переменных образа
+sudo nano /etc/default/myapp
 
-Для полной очистки (с удалением volumes):
-`docker-compose down -v`
+Добавьте: DOCKER_IMAGE=your-dockerhub-username/myapp:latest
+
+5. Активация сервиса  
+sudo systemctl daemon-reload
+sudo systemctl enable myapp.service
+sudo systemctl start myapp.service
+
+            CI/CD Pipeline
+
+Автоматический деплой при push, pull_request:
+
+Сборка Docker образа
+
+Пуш в Docker Hub
+
+Деплой на сервер через SSH
+
+            Необходимые Secrets:
+
+DOCKER_HUB_USERNAME
+
+DOCKER_HUB_TOKEN
+
+SSH_KEY
+
+SERVER_IP
+
