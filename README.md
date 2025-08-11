@@ -21,13 +21,20 @@
 
 ### Локальная разработка
 
-git clone git@github.com:NataliaBazhina/drf-project.git
+git clone git@github.com:NataliaBazhina/drf-project.git 
+
 cd drf-project
+
 python -m venv venv
+
 source venv/bin/activate
+
 pip install -r requirements.txt
+
 cp .env.sample .env  # заполните переменные
+
 python manage.py migrate
+
 python manage.py runserver
 
 ### Production-развертывание
@@ -35,34 +42,29 @@ python manage.py runserver
     На сервере выполните:
 
 sudo apt update && sudo apt install docker.io
+
 sudo systemctl enable docker
+
 mkdir -p ~/drf-project
 
     Скопируйте .env в ~/drf-project/.env
 
     Всё готово!
     При первом деплое через CI/CD:
-
-        Автоматически создастся systemd-сервис
-
-        Контейнер будет запущен с автоперезапуском
+      Автоматически создастся systemd-сервис
+      Контейнер будет запущен с автоперезапуском
 
 CI/CD Pipeline
 
 Автоматически при push, pull_request:
 
     Собирает Docker-образ
-
     Пушит в Docker Hub
-
     Разворачивает на сервере через SSH
 
 Необходимые Secrets:
 
     DOCKER_HUB_USERNAME
-
     DOCKER_HUB_TOKEN
-
     SSH_KEY
-
     SERVER_IP
