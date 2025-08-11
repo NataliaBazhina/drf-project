@@ -21,6 +21,7 @@ ENV SECRET_KEY='django-insecure-i)+xv5p+0b$!q)ihq+0dweq+lus-x*fh3b5awm+_k%)vev!h
 ENV CELERY_BROKER_URL='redis://localhost:6379'
 ENV CELERY_BACKEND='redis://localhost:6379'
 
+
 RUN mkdir -p /app/media
 RUN mkdir -p /app/static
 RUN mkdir -p /app/staticfiles && chmod -R 755 /app/staticfiles
