@@ -22,6 +22,7 @@ ENV CELERY_BROKER_URL='redis://localhost:6379'
 ENV CELERY_BACKEND='redis://localhost:6379'
 
 RUN mkdir -p /app/media
+RUN mkdir -p /app/static
 RUN mkdir -p /app/staticfiles && chmod -R 755 /app/staticfiles
 
 EXPOSE 8080
