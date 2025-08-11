@@ -70,6 +70,10 @@ jobs:
       run: |
         python -c "import sys; print('Test mode:', 'test' in sys.argv)"
 
+    - name: Debug Django
+      run: |
+        python -c "import django; print(django.__version__)"
+
   build:
     needs: test
     runs-on: ubuntu-latest
@@ -86,6 +90,11 @@ jobs:
 
       - name: Push Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+
+      - name: Verify Image
+        run: |
+          docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }} \
+            python -c "import django; print(django.__version__)"
 
   deploy:
     runs-on: ubuntu-latest
@@ -105,3 +114,7 @@ jobs:
             sudo docker rm myapp || true
             sudo docker run -d --name myapp -p 80:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
           EOF
+
+      - name: Verify Deployment
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "sudo docker logs myapp"
