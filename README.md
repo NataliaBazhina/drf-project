@@ -1,74 +1,70 @@
 # LMS-система
 
-LMS-система - это веб-приложение, позволяющее пользователям размещать свои полезные материалы или курсы.
+Веб-приложение для создания и управления образовательными курсами и материалами.
 
 ## Описание
 
-LMS-система позволяет создавать и управлять курсами, добавлять материалы, а также предоставляет функционал для управления пользователями и их доступами.
+Система предоставляет:
+- Создание и управление курсами
+- Размещение учебных материалов
+- Управление пользователями и правами доступа
 
-## Авторы
+## Технологии
 
-* Имя: Бажина Наталья
-* Email: nataliaagapova27@yandex.ru
-* GitHub: https://github.com/NataliaBazhina
+- Python 3.10
+- Django 4.2
+- PostgreSQL 14
+- Docker 20.10+
+- GitHub Actions
 
-## Требования к проекту
+## Установка
 
-* Python: версия 3.8 или выше
-* Django: версия 3.2 или выше
-* PostgreSQL: версия 12 или выше
-* Docker: версия 20.10 или выше
-* Docker Compose: версия 2.0 или выше
+### Локальная разработка
 
-## Инструкции по установке и запуску проекта
+git clone git@github.com:NataliaBazhina/drf-project.git 
 
-### Локальная установка (без Docker)
+cd drf-project
 
-1. Клонировать репозиторий: `git clone git@github.com:NataliaBazhina/drf-project.git`
-2. Перейти в папку проекта: `cd project`
-3. Установить зависимости: `pip install -r requirements.txt`
-4. Создайте файл `.env` в корневой папке проекта и заполните его по шаблону `.env.sample` переменными:
-   - `SECRET_KEY`: секретный ключ проекта (например, случайная строка из 50 символов)
-   - `NAME`: имя базы данных
-   - `DBUSER`: имя пользователя базы данных
-   - `PASSWORD`: пароль пользователя базы данных
-   - `HOST`: адрес хоста базы данных (например, localhost)
-   - `PORT`: порт базы данных (например, 5432)
-5. Создать базу данных: `python manage.py migrate`
-6. Запустить сервер: `python manage.py runserver`
+python -m venv venv
 
-### Запуск через Docker Compose
+source venv/bin/activate
 
-1. Клонировать репозиторий: `git clone git@github.com:NataliaBazhina/drf-project.git`
-2. Перейти в папку проекта: `cd project`
-3. Создать файл `.env` на основе `.env.sample` 
-4. Запустить проект: `docker-compose up -d --build`
-5. Проект будет доступен по адресу: http://localhost:8080
+pip install -r requirements.txt
 
-## Проверка работоспособности сервисов
+cp .env.sample .env  # заполните переменные
 
-1. **Django-приложение (web)**:
-   - Откройте в браузере: http://localhost:8080
-   - Проверка логов: `docker-compose logs web`
+python manage.py migrate
 
-2. **PostgreSQL (db)**:
-   - Проверить подключение: `docker-compose exec db psql -U postgres -d drf`
-   - Проверка логов: `docker-compose logs db`
+python manage.py runserver
 
-3. **Redis**:
-   - Проверить работу: `docker-compose exec redis redis-cli ping` (должен ответить "PONG")
-   - Проверка логов: `docker-compose logs redis`
+### Production-развертывание
 
-4. **Celery (worker)**:
-   - Проверка логов: `docker-compose logs celery`
+    На сервере выполните:
 
-5. **Celery Beat (scheduler)**:
-   - Проверка логов: `docker-compose logs celery_beat`
+sudo apt update && sudo apt install docker.io
 
-## Остановка проекта
+sudo systemctl enable docker
 
-Для остановки всех сервисов выполните:
-`docker-compose down`
+mkdir -p ~/drf-project
 
-Для полной очистки (с удалением volumes):
-`docker-compose down -v`
+    Скопируйте .env в ~/drf-project/.env
+
+    Всё готово!
+    При первом деплое через CI/CD:
+      Автоматически создастся systemd-сервис
+      Контейнер будет запущен с автоперезапуском
+
+CI/CD Pipeline
+
+Автоматически при push, pull_request:
+
+    Собирает Docker-образ
+    Пушит в Docker Hub
+    Разворачивает на сервере через SSH
+
+Необходимые Secrets:
+
+    DOCKER_HUB_USERNAME
+    DOCKER_HUB_TOKEN
+    SSH_KEY
+    SERVER_IP

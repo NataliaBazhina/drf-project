@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, permissions, viewsets
+from rest_framework import filters, viewsets
 from rest_framework.generics import (
     CreateAPIView,
     DestroyAPIView,
@@ -24,6 +24,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
         "type",
     )
     ordering_fields = ("payment_date",)
+
 
 class PaymentCreateAPIView(CreateAPIView):
     serializer_class = PaymentSerializer

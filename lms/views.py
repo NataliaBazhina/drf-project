@@ -23,6 +23,7 @@ from lms.tasks import subscription_message
 class HomePageView(TemplateView):
     template_name = "home.html"
 
+
 @method_decorator(
     name="list",
     decorator=swagger_auto_schema(

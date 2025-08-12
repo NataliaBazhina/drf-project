@@ -2,6 +2,8 @@ from datetime import date
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from lms.models import Course, Lesson
+
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 

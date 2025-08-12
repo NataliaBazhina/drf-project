@@ -1,6 +1,4 @@
 from datetime import timedelta
-
-from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from celery import shared_task
 from users.models import User
@@ -17,7 +15,7 @@ def block_user():
     blocked_users = list(users_to_block.values('id', 'email', 'last_login'))
     if blocked_users:
         updated = users_to_block.update(is_active=False)
-        print(f"\n=== Блокировка пользователей ===")
+        print("\n=== Блокировка пользователей ===")
         print(f"Проверка на: {timezone.now()}")
         print(f"Не заходили с: {time_threshold}")
         print(f"Заблокировано: {updated} пользователей")
